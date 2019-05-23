@@ -131,9 +131,8 @@ config CPU_FREQ_DEFAULT_GOV_SCHED
 	  scheduler.
 
 config CPU_FREQ_DEFAULT_GOV_DARKNESS
-	bool "DARKNESS"
+	bool "darkness"
 	select CPU_FREQ_GOV_DARKNESS
-	select CPU_FREQ_GOV_PERFORMANCE
 	help
 
 config CPU_FREQ_DEFAULT_GOV_INTELLIACTIVE
@@ -144,6 +143,37 @@ config CPU_FREQ_DEFAULT_GOV_INTELLIACTIVE
 	  you to get a full dynamic cpu frequency capable system by simply
 	  loading your cpufreq low-level hardware driver, using the
 	  'interactive' governor for latency-sensitive workloads.
+
+config CPU_INPUT_BOOST
+	bool "CPU Input Boost"
+	depends on !CPU_BOOST
+	help
+	  Boosts the CPU on touchscreen and touchpad input, and allows for
+	  boosting on other custom events, mainly which is intended to be for
+	  boosting when there is a new frame ready to be rendered to the
+	  display. The boost frequencies for this driver should be set so that
+	  frame drops are near-zero at the boosted frequencies and power
+	  consumption is minimized at said frequency combination.
+
+if CPU_INPUT_BOOST
+
+config INPUT_BOOST_DURATION_MS
+	int "Input boost duration"
+	default "100"
+	help
+	  Input boost duration in milliseconds.
+
+config WAKE_BOOST_DURATION_MS
+	int "Wake boost duration"
+	default "1000"
+	help
+	  Wake boost duration in milliseconds.
+
+config INPUT_BOOST_FREQ
+	int "CPU input boost freq"
+	default "0"
+	help
+	Input boost frequency for the CPU
 
 endchoice
 
@@ -253,9 +283,10 @@ config CPU_FREQ_GOV_SCHED
 
 	  If in doubt, say N.
 
-config CPU_FREQ_GOV_darkness
-	tristate "'darkness' cpufreq governor"
-	depends on CPU_FREQ
+ config CPU_FREQ_DEFAULT_GOV_DARKNESS
+	bool "DARKNESS"
+	select CPU_FREQ_GOV_DARKNESS
+	select CPU_FREQ_GOV_PERFORMANCE
 	help
 	  It's based on nightmare but more simple and fast, basic configs but very complex structure. It is an updated nightmare gov and improved stability, so far it is quite stable in tests
 
@@ -275,6 +306,11 @@ config CPU_FREQ_GOV_INTELLIACTIVE
 	  If in doubt, say N.
 
 comment "CPU frequency scaling drivers"
+
+config CPU_FREQ_GOV_DARKNESS
+	tristate "'darkness' cpufreq governor"
+	depends on CPU_FREQ
+	select CPU_FREQ_GOV_COMMON
 
 config CPUFREQ_DT
 	tristate "Generic DT based cpufreq driver"
