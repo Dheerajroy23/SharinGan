@@ -216,8 +216,6 @@ int snd_pcm_info(struct snd_pcm_substream *substream, struct snd_pcm_info *info)
 	info->subdevices_avail = pstr->substream_count - pstr->substream_opened;
 	strlcpy(info->subname, substream->name, sizeof(info->subname));
 
-	runtime = substream->runtime;
-
 	return 0;
 }
 
@@ -1264,10 +1262,6 @@ static int snd_pcm_pre_suspend(struct snd_pcm_substream *substream, int state)
 	case SNDRV_PCM_STATE_DISCONNECTED:
 		return -EBUSY;
 		return -EBUSY;
-	/* unresumable PCM state; return -EBUSY for skipping suspend */
-	case SNDRV_PCM_STATE_OPEN:
-	case SNDRV_PCM_STATE_SETUP:
-	case SNDRV_PCM_STATE_DISCONNECTED:
 		return -EBUSY;
 	}
 	runtime->trigger_master = substream;
